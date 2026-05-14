@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="MOUMEN PARKOUR RACE - Advanced Multiplayer 3D Parkour Racing Game. Play online with friends!">
+    <meta name="theme-color" content="#00d4ff">
+    
+    <title>MOUMEN PARKOUR RACE - Multiplayer 3D Game</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../src/styles/main.css">
+    <link rel="stylesheet" href="../src/styles/ui.css">
+    <link rel="stylesheet" href="../src/styles/animations.css">
+    <link rel="stylesheet" href="../src/styles/responsive.css">
+    
+    <!-- Prevent Flashing -->
+    <style>
+        html {
+            background: #0a0e27;
+            overflow: hidden;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div id="app" class="app-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen active">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <span class="logo-text">MOUMEN</span>
+                </div>
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Loading...</p>
+                <p class="loading-subtitle">Created by Moumen ZwD</p>
+            </div>
+        </div>
+
+        <!-- Game Canvas -->
+        <canvas id="game-canvas" class="game-canvas"></canvas>
+
+        <!-- UI Container -->
+        <div id="ui-container" class="ui-container">
+            <!-- Main Menu -->
+            <div id="main-menu" class="screen main-menu active">
+                <div class="menu-container">
+                    <div class="menu-header">
+                        <h1 class="game-title">
+                            <span class="title-glow">MOUMEN</span>
+                            <br>
+                            <span class="title-sub">PARKOUR RACE</span>
+                        </h1>
+                        <p class="creator-text">Created by Moumen ZwD</p>
+                    </div>
+
+                    <div class="menu-buttons">
+                        <button class="btn btn-primary btn-play" data-action="play">
+                            <span class="btn-text">PLAY</span>
+                        </button>
+                        <button class="btn btn-secondary" data-action="profile">PROFILE</button>
+                        <button class="btn btn-secondary" data-action="leaderboard">LEADERBOARD</button>
+                        <button class="btn btn-secondary" data-action="shop">SHOP</button>
+                        <button class="btn btn-secondary" data-action="settings">SETTINGS</button>
+                    </div>
+
+                    <div class="menu-footer">
+                        <p class="online-players">
+                            <span class="pulse"></span>
+                            <span id="online-count">0</span> Players Online
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Animated Background -->
+                <div class="menu-background">
+                    <div class="grid-background"></div>
+                    <div class="floating-particles"></div>
+                </div>
+            </div>
+
+            <!-- Auth Screen (Login/Register) -->
+            <div id="auth-screen" class="screen auth-screen">
+                <div class="auth-container">
+                    <div class="auth-box">
+                        <h2 id="auth-title">Login</h2>
+                        
+                        <form id="auth-form" class="auth-form">
+                            <input type="email" id="auth-email" placeholder="Email" required>
+                            <input type="password" id="auth-password" placeholder="Password" required>
+                            <input type="text" id="auth-username" placeholder="Username" class="hidden" required>
+                            
+                            <button type="submit" class="btn btn-primary btn-full">
+                                <span id="auth-submit-text">Login</span>
+                            </button>
+                        </form>
+
+                        <div class="auth-divider">OR</div>
+
+                        <button id="auth-toggle" class="btn btn-secondary btn-full">
+                            Create New Account
+                        </button>
+
+                        <button id="auth-back" class="btn btn-ghost btn-full">Back</button>
+
+                        <p class="auth-credit">Created by Moumen ZwD</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Screen -->
+            <div id="profile-screen" class="screen profile-screen">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <span id="profile-avatar-letter">M</span>
+                            <span id="profile-crown" class="crown hidden">👑</span>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">Player Name</h2>
+                            <p id="profile-level">Level 1</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Wins</span>
+                            <span class="stat-value" id="profile-wins">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Coins</span>
+                            <span class="stat-value" id="profile-coins">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Races</span>
+                            <span class="stat-value" id="profile-races">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Win %</span>
+                            <span class="stat-value" id="profile-winrate">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button class="btn btn-secondary btn-full" data-action="logout">Logout</button>
+                        <button class="btn btn-ghost btn-full" data-action="back">Back</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboard-screen" class="screen leaderboard-screen">
+                <div class="leaderboard-container">
+                    <h2>Global Leaderboard</h2>
+                    
+                    <div class="leaderboard-tabs">
+                        <button class="tab-btn active" data-tab="wins">Most Wins</button>
+                        <button class="tab-btn" data-tab="level">Level</button>
+                        <button class="tab-btn" data-tab="coins">Coins</button>
+                    </div>
+
+                    <div class="leaderboard-list" id="leaderboard-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <button class="btn btn-ghost btn-full" data-action="back">Back</button>
+                </div>
+            </div>
+
+            <!-- Waiting Lobby -->
+            <div id="waiting-lobby" class="screen waiting-lobby">
+                <div class="lobby-container">
+                    <h2>Waiting Lobby</h2>
+                    <p class="lobby-subtitle">Waiting for players to join...</p>
+
+                    <div class="players-list" id="players-list">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="lobby-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <p id="players-count">0/4 Players</p>
+                    </div>
+
+                    <button class="btn btn-secondary" id="leave-lobby">Leave</button>
+
+                    <p class="creator-credit">Created by Moumen ZwD</p>
+                </div>
+            </div>
+
+            <!-- In-Game HUD -->
+            <div id="game-hud" class="screen game-hud">
+                <div class="hud-top">
+                    <div class="position-display">
+                        <span id="player-position">--</span>
+                        <span class="position-label">Position</span>
+                    </div>
+                    <div class="map-name" id="map-name">Map Name</div>
+                    <div class="timer" id="game-timer">00:00</div>
+                </div>
+
+                <div class="hud-bottom">
+                    <div class="player-list" id="hud-players-list">
+                        <!-- Live player positions -->
+                    </div>
+                </div>
+
+                <div class="hud-mobile-controls">
+                    <div class="joystick-container">
+                        <div class="joystick" id="joystick">
+                            <div class="joystick-pad"></div>
+                        </div>
+                        <span class="control-label">Move</span>
+                    </div>
+
+                    <div class="button-controls">
+                        <button class="control-btn jump-btn" id="jump-btn">
+                            <span>JUMP</span>
+                        </button>
+                        <button class="control-btn dash-btn" id="dash-btn">
+                            <span>DASH</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="game-over" class="screen game-over">
+                <div class="game-over-container">
+                    <h2 id="game-over-title">Race Finished!</h2>
+                    
+                    <div class="game-over-content">
+                        <div class="winner-display" id="winner-display">
+                            <!-- Populated by JavaScript -->
+                        </div>
+
+                        <div class="race-results" id="race-results">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="game-over-actions">
+                        <button class="btn btn-primary" data-action="play-again">Play Again</button>
+                        <button class="btn btn-secondary" data-action="menu">Main Menu</button>
+                    </div>
+
+                    <p class="creator-credit">Created by Moumen ZwD</p>
+                </div>
+            </div>
+
+            <!-- Settings Screen -->
+            <div id="settings-screen" class="screen settings-screen">
+                <div class="settings-container">
+                    <h2>Settings</h2>
+
+                    <div class="settings-group">
+                        <label>Language</label>
+                        <select id="language-select">
+                            <option value="en">English</option>
+                            <option value="ar">العربية</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-group">
+                        <label>Master Volume</label>
+                        <input type="range" min="0" max="100" value="80" id="volume-slider">
+                    </div>
+
+                    <div class="settings-group">
+                        <label>Graphics Quality</label>
+                        <select id="quality-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="motion-blur" checked>
+                            <span>Motion Blur</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="particles" checked>
+                            <span>Particles</span>
+                        </label>
+                    </div>
+
+                    <button class="btn btn-ghost btn-full" data-action="back">Back</button>
+
+                    <p class="creator-credit">Created by Moumen ZwD</p>
+                </div>
+            </div>
+
+            <!-- Chat Box -->
+            <div id="chat-box" class="chat-box">
+                <div class="chat-header">
+                    <h3>Chat</h3>
+                    <button id="chat-toggle" class="chat-close">×</button>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form id="chat-form" class="chat-input">
+                    <input type="text" placeholder="Say something..." id="chat-input">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+
+            <!-- Notifications -->
+            <div id="notifications-container" class="notifications-container"></div>
+        </div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r160/three.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    
+    <!-- Main Application Bundle -->
+    <script src="bundle.js" defer></script>
+</body>
+</html>
